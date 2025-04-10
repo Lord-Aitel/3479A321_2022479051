@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Aplicacion de contador.Lab3Peters',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,10 +28,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 215, 106, 16)),
+        
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Mi Primer HomePage'),
     );
   }
 }
@@ -67,6 +68,19 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter++;
     });
   }
+
+  void _decrementCounter() {
+  setState(() {
+    _counter--;
+  });
+}
+void _resetCounter() {
+  setState(() {
+    _counter = 0;
+  });
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'Has presionado el botón esta cantidad de veces:',
             ),
             Text(
               '$_counter',
@@ -115,11 +129,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      persistentFooterButtons: [
+        ElevatedButton.icon(
+          onPressed: _decrementCounter,
+          icon: const Icon(Icons.remove),
+          label: const Text('Restar'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _incrementCounter,
+          icon: const Icon(Icons.add),
+          label: const Text('Sumar'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _resetCounter,
+          icon: const Icon(Icons.refresh),
+          label: const Text('Reiniciar'),
+        ),
+      ],
+ // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
