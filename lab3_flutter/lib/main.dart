@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:logger/logger.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,24 +15,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Aplicacion de contador.Lab3Peters',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 215, 106, 16)),
-        
         useMaterial3: true,
+        primaryColor: Colors.blue, 
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
+        fontFamily: 'Roboto', 
       ),
       home: const MyHomePage(title: 'Mi Primer HomePage'),
     );
@@ -68,6 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter++;
     });
   }
+  final Logger logger = Logger();
+
 
   void _decrementCounter() {
   setState(() {
@@ -90,8 +83,10 @@ void _resetCounter() {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    logger.i("Logger is working!");
     return Scaffold(
       appBar: AppBar(
+        body: Center(child: Text("Has presionado el botón $_counter veces")),
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
@@ -119,6 +114,11 @@ void _resetCounter() {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SvgPicture.asset(
+              'assets/icons/icono1.svg',
+              width: 100,
+              height: 100,              
+            ),
             const Text(
               'Has presionado el botón esta cantidad de veces:',
             ),
