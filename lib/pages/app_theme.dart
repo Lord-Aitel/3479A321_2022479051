@@ -40,8 +40,6 @@ class AppTheme {
       onSecondary: AppColors.onSecondary,
       error: AppColors.error,
       onError: AppColors.onError,
-      background: AppColors.background,
-      onBackground: AppColors.onBackground,
       surface: AppColors.surface,
       onSurface: AppColors.onSurface,
     ),

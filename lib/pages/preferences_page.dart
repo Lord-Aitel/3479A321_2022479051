@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // ¡Importante!
-import 'provider/app_data.dart'; // ¡Importante!
+import 'package:provider/provider.dart'; 
+import '../provider/app_data.dart'; 
 
 class PreferenciasPage extends StatefulWidget {
   const PreferenciasPage({super.key});
@@ -10,13 +10,11 @@ class PreferenciasPage extends StatefulWidget {
 }
 
 class _PreferenciasPageState extends State<PreferenciasPage> {
-  // Ya NO necesitamos _isResetEnabled, _loadPreferences(), _savePreferences() aquí.
-  // AppData se encarga de todo eso.
+
 
   @override
   Widget build(BuildContext context) {
-    // Usamos context.watch<AppData>() para escuchar los cambios en AppData
-    // y reconstruir el widget si _canReset cambia.
+
     final appData = context.watch<AppData>();
 
     return Scaffold(
@@ -24,10 +22,9 @@ class _PreferenciasPageState extends State<PreferenciasPage> {
       body: Center(
         child: SwitchListTile(
           title: const Text('Habilitar reinicio del contador'),
-          value: appData.canReset, // Leemos el valor directamente de AppData
+          value: appData.canReset,
           onChanged: (value) {
-            // Cuando el Switch cambia, llamamos al método setCanReset de AppData
-            // AppData se encargará de actualizar su estado y guardarlo en SharedPreferences.
+
             appData.setCanReset(value);
           },
         ),

@@ -1,22 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'provider/app_data.dart';
-import 'about_page.dart';
-// import 'home_Page.dart'; // Si ya moviste MyHomePage, asegúrate de que esté comentado o eliminado
-import 'preferences_page.dart';
-import 'activities_page.dart';
-import 'database_helper.dart';
-import 'provider/app_theme.dart'; // Importa tu nuevo archivo de tema
+import 'pages/about_page.dart';
+import 'pages/preferences_page.dart'; // Importa PreferenciasPage (nombre de la clase real)
+import 'pages/activities_page.dart'; // Mantén esta importación para la página de placeholder
+import 'data/database/database_helper.dart'; // Importa el DatabaseHelper
+import 'data/models/AppRoute.dart'; // Importa AppRoute (verifica que tu archivo se llame route.dart y no AppRoute.dart)
+import 'app_theme.dart'; // Para AppColors.onPrimary si lo usas en el DrawerHeader
+import 'pages/route_detail_page.dart';
+import 'pages/route_form_page.dart';
+import 'data/models/poi.dart'; // ¡Importa la nueva página de formulario de rutas!
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+// Mock data, asegúrate de que este archivo también exista en data/models/mock_routes.dart
+// Si no lo tienes, puedes definirlo directamente aquí o en un archivo aparte.
+// Lo más común es tenerlo en un archivo separado, ej. 'data/models/mock_routes.dart'
+// Si tu AppRoute.dart no define mockRoutes, asegúrate de tener una lista aquí o importarla.
+// Para este ejemplo, lo defino aquí temporalmente para que compile si no lo tienes separado.
+List<AppRoute> mockRoutes = [
+  AppRoute(
+    id: 1, // IDs serán ignorados por insertRoute, pero los mantengo para consistencia en mocks
+    name: 'Ruta Histórica de Talca',
+    description: 'Un recorrido a pie por los sitios históricos más emblemáticos de Talca, desde la Plaza de Armas hasta la Recova.',
+    imageUrl: 'https://img.fotocommunity.com/plaza-de-armas-talca-a5a544c4-722a-4318-9774-8395562d98c2.jpg?height=1080',
+    duration: '2.5 hrs',
+    difficulty: 'Fácil',
+    pointsOfInterest: [
+      POI(id: 1, routeId: 1, name: 'Plaza de Armas', description: 'Corazón de Talca, rodeada de edificios históricos.', latitude: -35.4267, longitude: -71.6667, imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Plaza_de_Armas_de_Talca.JPG/1200px-Plaza_de_Armas_de_Talca.JPG'),
+      POI(id: 2, routeId: 1, name: 'Catedral de Talca', description: 'Impresionante arquitectura, reconstruida varias veces.', latitude: -35.4275, longitude: -71.6675, imageUrl: 'https://live.staticflickr.com/8326/8099307767_405788939c_b.jpg'),
+      POI(id: 3, routeId: 1, name: 'Mercado Central (La Recova)', description: 'Centro de comercio local con productos frescos y artesanía.', latitude: -35.4240, longitude: -71.6700, imageUrl: 'https://talcacity.cl/wp-content/uploads/2016/09/mercado-talca-la-recova.jpg'),
+    ],
+  ),
+  AppRoute(
+    id: 2,
+    name: 'Parques y Naturaleza Urbana',
+    description: 'Explora los pulmones verdes de Talca, ideales para un paseo relajante o actividades al aire libre.',
+    imageUrl: 'https://www.utalca.cl/media/galeria/slider-p1/destacada_jardin-botanico.jpg',
+    duration: '1.5 hrs',
+    difficulty: 'Fácil',
+    pointsOfInterest: [
+      POI(id: 4, routeId: 2, name: 'Jardín Botánico UTalca', description: 'Gran diversidad de flora, un oasis en la ciudad.', latitude: -35.4510, longitude: -71.6490, imageUrl: 'https://www.utalca.cl/media/galeria/slider-p1/jardin-botanico.jpg'),
+      POI(id: 5, routeId: 2, name: 'Parque de la Cultura (Ex-ORION)', description: 'Espacio para el arte, la cultura y la recreación familiar.', latitude: -35.4180, longitude: -71.6750, imageUrl: 'https://vivimoslanoticia.cl/wp-content/uploads/2021/04/parque-orion-talca.jpg'),
+    ],
+  ),
+  AppRoute(
+    id: 3,
+    name: 'Ruta del Vino del Maule (Cercanías de Talca)',
+    description: 'Un viaje a través de los viñedos y bodegas de la Región del Maule, cuna de vinos excepcionales.',
+    imageUrl: 'https://vinosyviajes.cl/wp-content/uploads/2020/07/vi%C3%B1a-gonzalez-cabal.jpg',
+    duration: 'Día completo',
+    difficulty: 'Moderado',
+    pointsOfInterest: [
+      POI(id: 6, routeId: 3, name: 'Viña Balduzzi', description: 'Bodega familiar con tradición y excelentes vinos.', latitude: -35.4700, longitude: -71.5900, imageUrl: 'https://rutadelvinodelmaule.cl/wp-content/uploads/2020/07/balduzzi_galeria_01.jpg'),
+      POI(id: 7, routeId: 3, name: 'Viña Terranoble', description: 'Reconocida por sus carmenere y cabernet sauvignon.', latitude: -35.3900, longitude: -71.6000, imageUrl: 'https://www.terranoble.cl/wp-content/uploads/2019/07/vinaterranoble-header.jpg'),
+    ],
+  ),
+];
 
-  // Inicializa la base de datos.
-  await DatabaseHelper().database;
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized(); // Asegura que Flutter esté inicializado para sqflite
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => AppData(),
+      create: (context) => AppData(),
       child: const MyApp(),
     ),
   );
@@ -27,92 +73,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Rastro Urbano', // Actualizado el título de la aplicación
-      theme: AppTheme.lightTheme, // Aplicando tu tema personalizado
-      home: const MyHomePage(title: 'Rastro Urbano'), // Actualizado el título
-      routes: {
-        '/home': (context) => const MyHomePage(title: 'Rastro Urbano'),
-        '/about': (context) => const AboutPage(),
-        '/preferencias': (context) => const PreferenciasPage(),
-        '/actividades': (context) => const ActividadesPage(), // Considerar renombrar
-        // TODO: Añadir la ruta para RouteDetailPage aquí una vez que la crees
-        // '/routeDetail': (context) => const RouteDetailPage(),
+    return Consumer<AppData>(
+      builder: (context, appData, child) {
+        return MaterialApp(
+          title: 'Rastro Urbano',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: appData.themeMode,
+          home: const MyHomePage(title: 'Rastro Urbano'),
+          routes: {
+            '/about': (context) => const AboutPage(),
+            '/preferences': (context) => const PreferenciasPage(), // Usamos PreferenciasPage aquí
+            '/activities': (context) => const ActividadesPage(), // Ruta para la página de actividades
+          },
+        );
       },
     );
   }
 }
-
-// ================================================================
-// NUEVAS CLASES Y DATOS DE PRUEBA PARA MYHOMEPAGE
-// Idealmente, estas clases de modelo deberían estar en 'lib/models/route_model.dart'
-// y los datos de prueba en un archivo separado o cargados desde la base de datos.
-// ================================================================
-
-// Modelo básico para una ruta narrativa
-class Route {
-  final int id;
-  final String name;
-  final String description;
-  final String imageUrl;
-  final String duration;
-  final String difficulty;
-
-  const Route({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.imageUrl,
-    required this.duration,
-    required this.difficulty,
-  });
-}
-
-// Datos de prueba (mock data) para las rutas
-final List<Route> mockRoutes = [
-  const Route(
-    id: 1,
-    name: 'El Corazón de Talca',
-    description: 'Un recorrido por los puntos históricos y culturales más emblemáticos del centro de Talca.',
-    imageUrl: 'https://img.fotocommunity.com/la-plaza-de-armas-talca-e028b1e4-fc19-4cd1-b210-9cf65373673f.jpg?height=1080',
-    duration: '1.5 hrs',
-    difficulty: 'Fácil',
-  ),
-  const Route(
-    id: 2,
-    name: 'Mitos y Leyendas del Maule',
-    description: 'Adéntrate en las historias y mitos urbanos que han moldeado la tradición de la región del Maule.',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Iglesia_Coraz%C3%B3n_de_Mar%C3%ADa_%28Talca%29.jpg/1200px-Iglesia_Coraz%C3%B3n_de_Mar%C3%ADa_%28Talca%29.jpg',
-    duration: '2.0 hrs',
-    difficulty: 'Moderado',
-  ),
-  const Route(
-    id: 3,
-    name: 'Sabores y Tradiciones Talquinas',
-    description: 'Explora los mercados y locales donde la gastronomía local cobra vida.',
-    imageUrl: 'https://chileestuyo.cl/wp-content/uploads/2021/08/Talca.jpg',
-    duration: '1.0 hr',
-    difficulty: 'Fácil',
-  ),
-  const Route(
-    id: 4,
-    name: 'Arquitectura Histórica de Talca',
-    description: 'Un viaje a través del tiempo admirando las construcciones más antiguas y emblemáticas de la ciudad.',
-    imageUrl: 'https://mwz.cl/wp-content/uploads/2023/11/IMG_0129-scaled.jpg',
-    duration: '2.5 hrs',
-    difficulty: 'Moderado',
-  ),
-  const Route(
-    id: 5,
-    name: 'Parques y Espacios Verdes',
-    description: 'Descubre los pulmones de la ciudad y relájate en sus áreas verdes.',
-    imageUrl: 'https://elcentro.cl/wp-content/uploads/2024/05/WhatsApp-Image-2024-05-24-at-13.06.49.jpeg',
-    duration: '1.0 hr',
-    difficulty: 'Fácil',
-  ),
-];
-
-// ================================================================
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -120,169 +98,309 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() {
-    return _MyHomePageState();
-  }
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  _MyHomePageState(); // Constructor sin parámetros
+  final DatabaseHelper _dbHelper = DatabaseHelper(); // Instancia del DatabaseHelper
+  List<AppRoute> _routes = []; // Lista para almacenar las rutas cargadas de la DB
+  bool _isLoading = true; // Para mostrar un indicador de carga
 
-  // Eliminamos los métodos vacíos de initState, didChangeDependencies, etc.
-  // Solo mantén los que realmente uses.
+  @override
+  void initState() {
+    super.initState();
+    _loadRoutes(); // Cargar las rutas al iniciar la pantalla
+  }
+
+  Future<void> _loadRoutes() async {
+    setState(() {
+      _isLoading = true; // Indicar que estamos cargando
+    });
+
+    // Opcional: Eliminar la DB para reiniciar en desarrollo
+    // await _dbHelper.deleteDatabaseFile(); // ¡SOLO PARA DESARROLLO/PRUEBAS!
+
+    List<AppRoute> routes = await _dbHelper.getRoutes();
+
+    if (routes.isEmpty) {
+      // Si la DB está vacía, insertamos los mockRoutes
+      print('Base de datos de rutas vacía. Insertando rutas de prueba...');
+      for (var route in mockRoutes) {
+        await _dbHelper.insertRoute(route);
+      }
+      // Volvemos a cargar las rutas después de la inserción
+      routes = await _dbHelper.getRoutes();
+      print('Rutas de prueba insertadas y cargadas.');
+    } else {
+      print('Rutas cargadas desde la base de datos (${routes.length} rutas).');
+    }
+
+    setState(() {
+      _routes = routes; // Actualizar la lista de rutas
+      _isLoading = false; // Finalizar la carga
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final appData = context.watch<AppData>(); // Si aún usas appData, mantenlo.
+    final appData = Provider.of<AppData>(context); // Acceso a AppData para el tema
 
     return Scaffold(
       appBar: AppBar(
-        // Utiliza los colores del tema automáticamente gracias a Theme.of(context).colorScheme
-        // backgroundColor: Theme.of(context).colorScheme.primary, // Ya no es necesario si usas el tema
-        title: Text(
-          '${widget.title} ',
-          style: Theme.of(context).appBarTheme.titleTextStyle, // Usa el estilo del AppBar de tu tema
-        ),
-        actions: const [
-          // Puedes añadir acciones aquí si las necesitas
-        ],
-      ),
-      body: Center(
-        child: Column( // Puedes mantener el Column si quieres algún widget encima o debajo de la lista
-          children: <Widget>[
-            // Puedes añadir un banner o mensaje de bienvenida aquí si lo deseas
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Descubre las rutas narrativas de Talca:',
-                style: Theme.of(context).textTheme.headlineSmall, // Usa un estilo de texto de tu tema
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Expanded( // Envuelve ListView.builder en Expanded para que ocupe el espacio restante
-              child: ListView.builder(
-                itemCount: mockRoutes.length, // Número de rutas de tus datos de prueba
-                itemBuilder: (context, index) {
-                  final route = mockRoutes[index]; // Obtiene la ruta actual
-
-                  return Card(
-                    // Utiliza los estilos de Card de tu tema
-                    margin: Theme.of(context).cardTheme.margin,
-                    elevation: Theme.of(context).cardTheme.elevation,
-                    shape: Theme.of(context).cardTheme.shape,
-                    child: InkWell( // Usa InkWell para un efecto de "splash" al tocar
-                      onTap: () {
-                        // TODO: Implementar navegación a la página de detalles de la ruta
-                        print('Navegando a los detalles de: ${route.name}');
-                        // Ejemplo de navegación (necesitarás crear RouteDetailPage)
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => RouteDetailPage(route: route),
-                        //   ),
-                        // );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Imagen de la ruta
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                route.imageUrl,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 100,
-                                    height: 100,
-                                    color: Colors.grey[300],
-                                    child: Icon(Icons.broken_image, color: Colors.grey[600]),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            // Detalles de la ruta
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    route.name,
-                                    style: Theme.of(context).textTheme.titleLarge, // Estilo para el título de la ruta
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    route.description,
-                                    style: Theme.of(context).textTheme.bodyMedium, // Estilo para la descripción
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.timer, size: 16, color: Theme.of(context).colorScheme.secondary),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        route.duration,
-                                        style: Theme.of(context).textTheme.labelMedium,
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Icon(Icons.directions_walk, size: 16, color: Theme.of(context).colorScheme.secondary),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        route.difficulty,
-                                        style: Theme.of(context).textTheme.labelMedium,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+        title: Text(widget.title),
+        backgroundColor: Theme.of(context).colorScheme.primary, // Color primario de tu tema
+        foregroundColor: Theme.of(context).colorScheme.onPrimary, // Color del texto del AppBar
       ),
       drawer: Drawer(
         child: ListView(
-          children: [
+          padding: EdgeInsets.zero,
+          children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary), // Usa el color primario de tu tema
-              child: Text('Menú de Navegación', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppColors.onPrimary)), // Estilo con color del tema
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: Text(
+                'Menú Principal',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary, // Texto en color onPrimary
+                  fontSize: 24,
+                ),
+              ),
             ),
             ListTile(
-              title: const Text('Home'),
-              onTap: () => Navigator.pushNamed(context, '/home'),
-            ),
-            ListTile(
-              title: const Text('About'),
-              onTap: () => Navigator.pushNamed(context, '/about'),
-            ),
-            ListTile(
-              title: const Text('Preferencias'),
+              leading: const Icon(Icons.home),
+              title: const Text('Inicio'),
               onTap: () {
-                Navigator.pushNamed(context, '/preferencias');
+                Navigator.pop(context); // Cierra el Drawer
+                // Ya estamos en el inicio, no hace falta navegar
               },
             ),
             ListTile(
-              title: const Text('Actividades'), // Renombrar en el futuro?
-              onTap: () => Navigator.pushNamed(context, '/actividades'),
+              leading: const Icon(Icons.info),
+              title: const Text('Acerca de'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el Drawer
+                Navigator.pushNamed(context, '/about');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Preferencias'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el Drawer
+                Navigator.pushNamed(context, '/preferences');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.local_activity),
+              title: const Text('Actividades'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el Drawer
+                Navigator.pushNamed(context, '/activities');
+              },
+            ),
+            const Divider(), // Separador visual
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Tema Oscuro'),
+                  Switch(
+                    value: appData.themeMode == ThemeMode.dark,
+                    onChanged: (value) {
+                      appData.toggleTheme();
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
+      ),
+      body: _isLoading // Muestra un indicador de carga si los datos no han terminado de cargar
+          ? const Center(child: CircularProgressIndicator())
+          : _routes.isEmpty // Si no hay rutas después de cargar
+              ? const Center(
+                  child: Text('No hay rutas disponibles.', style: TextStyle(fontSize: 16, color: Colors.grey)),
+                )
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Explora las rutas narrativas por Talca',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _routes.length,
+                        itemBuilder: (context, index) {
+                          final route = _routes[index]; // Ahora usa _routes
+
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            elevation: 4.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(15.0),
+                              onTap: () {
+                                print('Navegando a los detalles de: ${route.name}');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => RouteDetailPage(route: route),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      child: Image.network(
+                                        route.imageUrl,
+                                        height: 180,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            height: 180,
+                                            width: double.infinity,
+                                            color: Colors.grey[300],
+                                            child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 80),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12.0),
+                                    Text(
+                                      route.name,
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      route.description,
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 12.0),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(Icons.timer, size: 18, color: Theme.of(context).colorScheme.secondary),
+                                            const SizedBox(width: 4.0),
+                                            Text(
+                                              route.duration,
+                                              style: Theme.of(context).textTheme.bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.directions_walk, size: 18, color: Theme.of(context).colorScheme.secondary),
+                                            const SizedBox(width: 4.0),
+                                            Text(
+                                              route.difficulty,
+                                              style: Theme.of(context).textTheme.bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    // AÑADE ESTA FILA PARA LOS BOTONES DE ACCIÓN
+                                    const SizedBox(height: 12.0),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end, // Alinea los botones a la derecha
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.edit, color: Colors.blue),
+                                          tooltip: 'Editar Ruta',
+                                          onPressed: () async {
+                                            print('Editando ruta: ${route.name}');
+                                            final bool? result = await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => RouteFormPage(routeToEdit: route), // Pasa la ruta a editar
+                                              ),
+                                            );
+                                            if (result == true) {
+                                              _loadRoutes(); // Recarga las rutas si se editó
+                                            }
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete, color: Colors.red),
+                                          tooltip: 'Eliminar Ruta',
+                                          onPressed: () async {
+                                            print('Eliminando ruta: ${route.name}');
+                                            final bool? confirm = await showDialog<bool>(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: const Text('Confirmar Eliminación'),
+                                                  content: Text('¿Estás seguro de que quieres eliminar la ruta "${route.name}"?'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(context, false),
+                                                      child: const Text('Cancelar'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(context, true),
+                                                      child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+
+                                            if (confirm == true) {
+                                              await _dbHelper.deleteRoute(route.id);
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text('Ruta "${route.name}" eliminada.')),
+                                              );
+                                              _loadRoutes(); // Recarga las rutas después de eliminar
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+      floatingActionButton: FloatingActionButton( // <-- AÑADE ESTO
+        onPressed: () async {
+          print('Botón Agregar Ruta presionado');
+          final bool? result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const RouteFormPage(), // Navega a una nueva pantalla de formulario
+            ),
+          );
+
+          if (result == true) { // Si el formulario retorna 'true' (indicando que se guardó algo)
+            _loadRoutes(); // Recarga las rutas para actualizar la UI
+          }
+        },
+        tooltip: 'Agregar nueva ruta',
+        child: const Icon(Icons.add),
       ),
     );
   }

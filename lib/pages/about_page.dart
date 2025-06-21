@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'provider/app_data.dart';
+import '../provider/app_data.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
