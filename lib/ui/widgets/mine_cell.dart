@@ -10,13 +10,13 @@ class MineCell extends StatelessWidget {
 
         return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
+      children: [
         // Icono nativo de Flutter
-        Icon(Icons.timer, size: 30, color: Colors.black54),
-        SizedBox(width: 8),
+        //const Icon(Icons.timer, size: 30, color: Colors.black54),
+        //const SizedBox(width: 8),
         //Icon(Icons.add_circle_outline, size: 30, color: Colors.black54),
         // Icono desde assets
-        //Image.asset('assets/icons/deadline.png', width: 30, height: 30),
+        Image.asset('assets/images/mine.png', width: 30, height: 30),
       ],
     );
   }
