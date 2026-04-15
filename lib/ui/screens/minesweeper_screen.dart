@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../widgets/mine_cell.dart';
+import '../../about.dart';
 
 var logger = Logger();
 
@@ -23,6 +24,18 @@ class _MinesweeperScreenState extends State<MinesweeperScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Buscaminas"),
         centerTitle: true,
+
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutScreen()),
+              );
+            },
+          ),
+        ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -42,14 +55,6 @@ class _MinesweeperScreenState extends State<MinesweeperScreen> {
             return MineCell(hasMine: tieneMina);
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          logger.i('Reiniciando o refrescando tablero');
-          setState(() {}); // Refresca la pantalla
-        },
-        tooltip: 'Refrescar',
-        child: const Icon(Icons.refresh),
       ),
     );
   }

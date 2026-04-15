@@ -6,9 +6,9 @@ var logger = Logger();
 
 void main() {
   logger.d('Iniciando la aplicación de Buscaminas');
-  logger.i('Iniciando la aplicación de Buscaminas'); // Info
-  logger.w('Iniciando la aplicación de Buscaminas'); // Warning
-  logger.e('Iniciando la aplicación de Buscaminas'); // Error
+  //logger.i('Iniciando la aplicación de Buscaminas'); // Info
+  //logger.w('Iniciando la aplicación de Buscaminas'); // Warning
+  //logger.e('Error en la ejecucion'); // Error
 
   runApp(const MyApp());
 }
@@ -21,10 +21,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Buscaminas',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 11, 10, 11),
+          primary: const Color.fromARGB(255, 0, 0, 0),
+          secondary: const Color.fromARGB(255, 0, 0, 0)
       ),
-      home: const MinesweeperScreen(),
-    );
+      scaffoldBackgroundColor: const Color.fromARGB(255, 102, 4, 250), 
+
+      textTheme: const TextTheme(
+          bodyMedium: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+      ),
+      useMaterial3: true,
+      ),
+      home: const MinesweeperScreen(), // Apuntamos a nuestra nueva pantalla
+      );
   }
 }

@@ -6,17 +6,18 @@ class MineCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondary,
-        border: Border.all(color: theme.colorScheme.outline, width: 1.5),
-      ),
-      child: Center(
-        child: hasMine
-            ? const Icon(Icons.warning, color: Colors.red)
-            : const Icon(Icons.check, color: Colors.green),
-      ),
+    //final theme = Theme.of(context);
+
+        return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        // Icono nativo de Flutter
+        Icon(Icons.timer, size: 30, color: Colors.black54),
+        SizedBox(width: 8),
+        //Icon(Icons.add_circle_outline, size: 30, color: Colors.black54),
+        // Icono desde assets
+        //Image.asset('assets/icons/deadline.png', width: 30, height: 30),
+      ],
     );
   }
 }
