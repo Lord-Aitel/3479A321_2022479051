@@ -13,16 +13,21 @@ class MinesweeperScreen extends StatefulWidget {
 }
 
 class _MinesweeperScreenState extends State<MinesweeperScreen> {
-  // Definimos el tamaño del tablero
+  /* Definimos el tamaño del tablero
   final int rows = 8;
-  final int columns = 8;
+  final int columns = 8;*/
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    final String difficulty = args?['difficulty'] ?? 'Desconocida';
+    final int gridSize = args?['gridSize'] ?? 10; //
+
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar( 
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Buscaminas"),
+        title: Text("Buscaminas - $difficulty"), // se señala la dificultad en el título
         centerTitle: true,
 
         actions: [
@@ -42,11 +47,11 @@ class _MinesweeperScreenState extends State<MinesweeperScreen> {
         child: GridView.builder(
           // Configuración de la cuadrícula
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: columns, // Número de columnas
+            crossAxisCount: gridSize, // Número de columnas, ahora dependiente del argumento recibido
             mainAxisSpacing: 4.0,    // Espaciado vertical
             crossAxisSpacing: 4.0,   // Espaciado horizontal
           ),
-          itemCount: rows * columns, // Total de celdas
+          itemCount: gridSize * gridSize, // Total de celdas, ahora dependiente del argumento recibido
           itemBuilder: (context, index) {
             bool tieneMina = index % 7 == 0; 
             

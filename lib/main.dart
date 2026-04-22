@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'Buscaminas',
       theme: ThemeData(
@@ -45,5 +46,6 @@ class MyApp extends StatelessWidget {
         },
       //home: const MinesweeperScreen(), // Apuntamos a nuestra nueva pantalla
       );
+      
   }
 }
