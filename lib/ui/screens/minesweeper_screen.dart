@@ -48,10 +48,9 @@ class _MinesweeperScreenState extends State<MinesweeperScreen> {
           ),
           itemCount: rows * columns, // Total de celdas
           itemBuilder: (context, index) {
-            // Ejemplo: ponemos una mina si el índice es múltiplo de 7
             bool tieneMina = index % 7 == 0; 
             
-            // LLAMADA A TU WIDGET MINECELL
+
             return MineCell(hasMine: tieneMina);
           },
         ),
