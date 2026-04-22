@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'ui/screens/minesweeper_screen.dart';
- 
+import 'ui/screens/history_screen.dart';
+import 'about.dart';
+import 'ui/screens/menu_screen.dart';
+
 var logger = Logger();
 
 void main() {
@@ -33,7 +36,14 @@ class MyApp extends StatelessWidget {
       ),
       useMaterial3: true,
       ),
-      home: const MinesweeperScreen(), // Apuntamos a nuestra nueva pantalla
+        initialRoute: '/menu',
+        routes: {
+          '/menu': (context) => const MenuScreen(),
+          '/game': (context) => const MinesweeperScreen(),
+          '/history': (context) => const HistoryScreen(),
+          '/about': (context) => const AboutScreen(),
+        },
+      //home: const MinesweeperScreen(), // Apuntamos a nuestra nueva pantalla
       );
   }
 }
