@@ -20,7 +20,6 @@ class GameViewModel extends ChangeNotifier {
     _startTimer();
   }
 
-  // 👇 Getter para usar en la pantalla
   bool get isGameOver => _isGameOver;
 
   void _generateBoard() {

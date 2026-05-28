@@ -27,8 +27,7 @@ class MinesweeperScreen extends StatelessWidget {
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
               title: Text("Buscaminas - $difficulty"),
               centerTitle: true,
-              actions: [
-                // 👇 Botón de compartir solo aparece cuando el juego terminó
+              actions: [                
                 if (viewModel.isGameOver)
                   IconButton(
                     icon: const Icon(Icons.share),
