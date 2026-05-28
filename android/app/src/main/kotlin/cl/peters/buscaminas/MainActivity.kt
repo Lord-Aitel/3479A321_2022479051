@@ -1,4 +1,4 @@
-package com.example.mobiles_laboratorio_1
+package cl.peters.buscaminas
 
 import io.flutter.embedding.android.FlutterActivity
 
