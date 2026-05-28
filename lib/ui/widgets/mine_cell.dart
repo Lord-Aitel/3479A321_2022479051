@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 
 class MineCell extends StatelessWidget {
   final bool hasMine;
-  const MineCell({super.key, required this.hasMine});
+  final bool isRevealed;
+  const MineCell({super.key, required this.hasMine, required this.isRevealed});
 
   @override
   Widget build(BuildContext context) {
-    //final theme = Theme.of(context);
-
-        return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Icono nativo de Flutter
-        //const Icon(Icons.timer, size: 30, color: Colors.black54),
-        //const SizedBox(width: 8),
-        //Icon(Icons.add_circle_outline, size: 30, color: Colors.black54),
-        // Icono desde assets
-        Image.asset('assets/images/mine.png', width: 30, height: 30),
-      ],
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black54),
+        color: Colors.grey[300],
+      ),
+      child: Center(
+        child: isRevealed
+            ? (hasMine
+                ? Image.asset('assets/images/mine.png', width: 30, height: 30)
+                : const Icon(Icons.check, size: 30, color: Colors.green))
+            : const SizedBox.shrink(), // celda vacía al inicio
+      ),
     );
   }
 }
